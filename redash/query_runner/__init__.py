@@ -119,6 +119,7 @@ class BaseQueryRunner(object):
     should_annotate_query = True
     noop_query = None
     limit_query = " LIMIT 1000"
+    limit_keywords = [ "LIMIT", "OFFSET"]
 
     def __init__(self, configuration):
         self.syntax = "sql"
@@ -288,8 +289,7 @@ class BaseSQLQueryRunner(BaseQueryRunner):
         if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
             return False
 
-        no_limit = parsed_query.tokens[last_keyword_idx].value.upper() != "LIMIT" \
-                and parsed_query.tokens[last_keyword_idx].value.upper() != "OFFSET"
+        no_limit = parsed_query.tokens[last_keyword_idx].value.upper() not in self.limit_keywords
 
         return no_limit
 
