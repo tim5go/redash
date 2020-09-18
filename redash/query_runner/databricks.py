@@ -12,6 +12,7 @@ from redash.query_runner import (
     TYPE_FLOAT,
 )
 from redash.utils import json_dumps, json_loads
+from redash.query_runner import split_sql_statements
 from redash import __version__
 
 try:
