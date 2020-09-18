@@ -37,6 +37,10 @@ class TestBaseSQLQueryRunner(unittest.TestCase):
         query = "SELECT *"
         self.assertEqual("SELECT * LIMIT 1000", self.query_runner.add_limit_to_query(query))
 
+    def test_add_limit_query_with_punc(self):
+        query = "SELECT *;"
+        self.assertEqual("SELECT * LIMIT 1000;", self.query_runner.add_limit_to_query(query))
+
     def test_apply_auto_limit_origin_no_limit_1(self):
         origin_query_text = "SELECT 2"
         query_text = self.query_runner.apply_auto_limit(origin_query_text, True)
