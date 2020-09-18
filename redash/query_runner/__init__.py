@@ -118,6 +118,7 @@ class BaseQueryRunner(object):
     deprecated = False
     should_annotate_query = True
     noop_query = None
+    limit_query = " LIMIT 1000"
 
     def __init__(self, configuration):
         self.syntax = "sql"
@@ -280,10 +281,6 @@ class BaseSQLQueryRunner(BaseQueryRunner):
     def supports_auto_limit(self):
         return True
 
-    @property
-    def limit_text(self):
-        return " LIMIT 1000"
-
     def query_is_select_no_limit(self, query):
         parsed_query = sqlparse.parse(query)[0]
         last_keyword_idx = find_last_keyword_idx(parsed_query)
@@ -298,7 +295,7 @@ class BaseSQLQueryRunner(BaseQueryRunner):
 
     def add_limit_to_query(self, query):
         parsed_query = sqlparse.parse(query)[0]
-        limit_tokens = sqlparse.parse(self.limit_text)[0].tokens
+        limit_tokens = sqlparse.parse(self.limit_query)[0].tokens
         length = len(parsed_query.tokens)
         if parsed_query.tokens[length - 1].ttype == sqlparse.tokens.Punctuation:
             parsed_query.tokens[length - 1:length - 1] = limit_tokens

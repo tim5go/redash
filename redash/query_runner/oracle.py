@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 class Oracle(BaseSQLQueryRunner):
     noop_query = "SELECT 1 FROM dual"
+    limit_query = " FETCH NEXT 1000 ROWS ONLY"
 
     @classmethod
     def get_col_type(cls, col_type, scale):
@@ -122,6 +123,20 @@ class Oracle(BaseSQLQueryRunner):
                     outconverter=Oracle._convert_number,
                     arraysize=cursor.arraysize,
                 )
+
+    def query_is_select_no_limit(self, query):
+        parsed_query = sqlparse.parse(query)[0]
+        last_keyword_idx = find_last_keyword_idx(parsed_query)
+        # Either invalid query or query that is not select
+        if last_keyword_idx == -1 or parsed_query.tokens[0].value.upper() != "SELECT":
+            return False
+
+        no_limit = parsed_query.tokens[last_keyword_idx].value.upper() != "ROW" \
+                and parsed_query.tokens[last_keyword_idx].value.upper() != "ROWS" \
+                and parsed_query.tokens[last_keyword_idx].value.upper() != "ONLY" \
+                and parsed_query.tokens[last_keyword_idx].value.upper() != "TIES" \
+
+        return no_limit
 
     def run_query(self, query, user):
         if self.configuration.get("encoding"):
