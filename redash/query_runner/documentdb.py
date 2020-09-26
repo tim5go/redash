@@ -129,7 +129,9 @@ class DocumentDB(BaseQueryRunner):
 
     @classmethod
     def configuration_schema(cls):
-        return {
+        show_ssl_settings = True
+
+        schema = {
             "type": "object",
             "properties": {
                 "connectionString": {"type": "string", "title": "Connection String"},
@@ -149,6 +151,19 @@ class DocumentDB(BaseQueryRunner):
             },
             "required": ["connectionString", "dbName"],
         }
+
+        if show_ssl_settings:
+            schema["properties"].update(
+                {
+                    "ssl": {"type": "boolean", "title": "Use SSL"},
+                    "ssl_ca_certs": {
+                        "type": "string",
+                        "title": "Path to CA certificate file to verify peer against (SSL)",
+                    },
+                }
+            )
+
+        return schema 
 
     @classmethod
     def enabled(cls):
