@@ -13,7 +13,7 @@ from redash.query_runner import (
 )
 from redash.utils import json_dumps, json_loads
 from redash.query_runner import split_sql_statements
-from redash import __version__
+from redash import __version__, settings, statsd_client
 
 try:
     import pyodbc
